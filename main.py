@@ -1,15 +1,21 @@
-def calculate_and_report(input_file, output_file):
-    # Открываем входной файл для чтения
-    with open (input_file, "r") as file:
-        numbers = [int(line.strip()) for line in file if line.strip().isdigit()]
-    # Вычисляем сумму чисел в списке numbers
-    total_sum = sum(numbers)
-    # Вычисляем среднее значение; если список пустой, устанавливаем среднее равным 0
-    average = total_sum / len(numbers) if numbers else 0
+import pandas as pd
 
-    # Открываем выходной файл для записи отчета
-    with open (output_file, "w") as report:
-        report.write(f"Total sum: {total_sum}, Average: {average}")
+# Загрузка данных из Excel-файла
+file_path = 'financial_report.xlsx'
+sheet_name = 'Операции'
+column_name = 'Доход'
 
-# Запускаем функцию с заданными именами входного и выходного файлов
-calculate_and_report('data.txt', 'report.txt')
+# Чтение данных из указанного листа
+
+data = pd.read_excel(file_path, sheet_name=sheet_name)
+# Выбор колонки "Доход"
+income_data = data[column_name]
+
+# Вычисление минимального, максимального и среднего дохода
+max_income = income_data.max()
+min_income = income_data.min()
+mean_income = income_data.mean()
+# Вывод результатов на экран
+print(f"Минимальный доход: {min_income}")
+print(f"Максимальный доход: {max_income}")
+print(f"Средний доход: {mean_income}")
