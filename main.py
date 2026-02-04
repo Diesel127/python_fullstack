@@ -1,26 +1,12 @@
-import os
+import urllib.request
 
-import requests
-from dotenv import load_dotenv
+# URL-адрес, с которого будем получать HTML-код
+url = "https://example.com"
 
-load_dotenv()
+# Открываем URL и считываем HTML-код
+with urllib.request.urlopen(url) as response:
+    # Читаем содержимое страницы
+    html_code = response.read()
 
-USER_SESSION = os.getenv("GITHUB_SESSION")
-
-cookies = {
-    "user_session": USER_SESSION
-}
-
-
-url = 'https://github.com/settings/profile'
-
-
-response = requests.get(url, cookies=cookies)
-
-
-if response.status_code == 200:
-    # Вывод данных на экран
-    print("Данные с защищенной страницы:")
-    print(response.text)
-else:
-    print("Не удалось получить доступ к защищенной странице. Код ошибки:", response.status_code)
+# Декодируем HTML-код в строковый формат и выводим на экран
+print(html_code.decode('utf-8'))
