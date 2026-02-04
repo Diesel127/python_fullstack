@@ -1,21 +1,26 @@
-import pandas as pd
+import os
 
-# Загрузка данных из Excel-файла
-file_path = 'financial_report.xlsx'
-sheet_name = 'Операции'
-column_name = 'Доход'
+import requests
+from dotenv import load_dotenv
 
-# Чтение данных из указанного листа
+load_dotenv()
 
-data = pd.read_excel(file_path, sheet_name=sheet_name)
-# Выбор колонки "Доход"
-income_data = data[column_name]
+USER_SESSION = os.getenv("GITHUB_SESSION")
 
-# Вычисление минимального, максимального и среднего дохода
-max_income = income_data.max()
-min_income = income_data.min()
-mean_income = income_data.mean()
-# Вывод результатов на экран
-print(f"Минимальный доход: {min_income}")
-print(f"Максимальный доход: {max_income}")
-print(f"Средний доход: {mean_income}")
+cookies = {
+    "user_session": USER_SESSION
+}
+
+
+url = 'https://github.com/settings/profile'
+
+
+response = requests.get(url, cookies=cookies)
+
+
+if response.status_code == 200:
+    # Вывод данных на экран
+    print("Данные с защищенной страницы:")
+    print(response.text)
+else:
+    print("Не удалось получить доступ к защищенной странице. Код ошибки:", response.status_code)
