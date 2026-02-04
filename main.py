@@ -1,12 +1,17 @@
-import urllib.request
+import requests
+from bs4 import BeautifulSoup
 
-# URL-адрес, с которого будем получать HTML-код
-url = "https://example.com"
+url = "https://en.wikipedia.org/wiki/James_Bond"
 
-# Открываем URL и считываем HTML-код
-with urllib.request.urlopen(url) as response:
-    # Читаем содержимое страницы
-    html_code = response.read()
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
 
-# Декодируем HTML-код в строковый формат и выводим на экран
-print(html_code.decode('utf-8'))
+response = requests.get(url, headers=headers)
+
+soup = BeautifulSoup(response.text, "html.parser")
+
+link = soup.find("a")
+
+if link and link.get("href"):
+    print(link.get("href"))
