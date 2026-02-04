@@ -1,17 +1,34 @@
-import requests
 from bs4 import BeautifulSoup
+import csv
 
-url = "https://en.wikipedia.org/wiki/James_Bond"
+# Загрузка HTML-файла
+with open('products.html', 'r', encoding='utf-8') as file:
+    html_content = file.read()
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
+# Создание объекта BeautifulSoup
+soup = BeautifulSoup(html_content, 'html.parser')
 
-response = requests.get(url, headers=headers)
+# Настройка CSS-селекторов для извлечения данных
+product_selector = '.product'
+name_selector = '.product-name'
+price_selector = '.product-price'
 
-soup = BeautifulSoup(response.text, "html.parser")
+# Извлечение данных
+products = soup.select(product_selector)
+product_data = []
 
-link = soup.find("a")
+for product in products:
+    name = product.select_one(name_selector)
+    price = product.select_one(price_selector)
+    if name and price:
+        name = name.get_text(strip=True)
+        price = price.get_text(strip=True)
 
-if link and link.get("href"):
-    print(link.get("href"))
+        product_data.append([name, price])
+        print(f"Product: {name}, Price: {price}")
+# Экспорт данных в CSV
+
+with open("products.csv", "w", newline="", encoding="utf-8") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(["Name", "Price"])
+    writer.writerows(product_data)
