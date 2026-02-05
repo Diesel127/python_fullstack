@@ -1,37 +1,29 @@
-import csv
-import os
+from bs4 import BeautifulSoup
 
-# Определяем имя файла, с которым будем работать
-filename = 'students.csv'
+# Загрузка HTML-файла
+with open('example.html', 'r', encoding='utf-8') as file:
+    html_content = file.read()
 
-file_exists = os.path.exists(filename)
-file_empty = not file_exists or os.stat(filename).st_size == 0
-# Создаем пустой список для хранения информации о студентах
-students = []
+# Создание объекта BeautifulSoup
+soup = BeautifulSoup(html_content, 'html.parser')
 
-# Чтение данных студентов из CSV-файла
-with open(filename, mode='r', newline='', encoding='utf-8') as csvfile:
-    # Создаем объект csvreader для чтения строк из файла
-    csvreader = csv.reader(csvfile)
+# Поиск всех продуктов
+products = soup.find_all('div', class_='product')
 
-    for row in csvreader:
-        # Проверяем, что в строке ровно 3 элемента (имя, возраст, курс)
-        if len(row) == 3:
-            # Добавляем данные студента в список в виде словаря
-            students.append({
-                'name': row[0],
-                'age': row[1],
-                'course': row[2]
-            })
+# Обработка каждого продукта
+for product in products:
+    # Извлечение названия продукта
+    title = product.find('h3').text
 
-# Пример добавления нового студента
-students.append({'name': 'John Doe', 'age': '22', 'course': 'Physics'})
+    # Извлечение цены продукта
+    price = product.find('span', class_='price').text
 
-# Запись обновленных данных студентов в CSV-файл
-with open(filename, mode='w', newline='', encoding='utf-8') as csvfile:
-    # Создаем объект csvwriter для записи строк в файл
-    csvwriter = csv.DictWriter(csvfile, fieldnames=["name", "age", "course"])
-    # Записываем данные каждого студента в файл
-    if file_empty:
-        csvwriter.writeheader()
-    csvwriter.writerows(students)
+    # Извлечение описания продукта
+    description = product.find('p').text
+
+    # Проверка наличия и извлечение информации о скидке
+    discount_tag = product.find('div', class_='discount')
+    discount = discount_tag.text if discount_tag else 'No discount'
+
+    # Вывод информации о продукте
+    print(f"Title: {title}, Price: {price}, Discount: {discount}")
