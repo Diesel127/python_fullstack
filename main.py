@@ -1,34 +1,37 @@
-from bs4 import BeautifulSoup
 import csv
+import os
 
-# Загрузка HTML-файла
-with open('products.html', 'r', encoding='utf-8') as file:
-    html_content = file.read()
+# Определяем имя файла, с которым будем работать
+filename = 'students.csv'
 
-# Создание объекта BeautifulSoup
-soup = BeautifulSoup(html_content, 'html.parser')
+file_exists = os.path.exists(filename)
+file_empty = not file_exists or os.stat(filename).st_size == 0
+# Создаем пустой список для хранения информации о студентах
+students = []
 
-# Настройка CSS-селекторов для извлечения данных
-product_selector = '.product'
-name_selector = '.product-name'
-price_selector = '.product-price'
+# Чтение данных студентов из CSV-файла
+with open(filename, mode='r', newline='', encoding='utf-8') as csvfile:
+    # Создаем объект csvreader для чтения строк из файла
+    csvreader = csv.reader(csvfile)
 
-# Извлечение данных
-products = soup.select(product_selector)
-product_data = []
+    for row in csvreader:
+        # Проверяем, что в строке ровно 3 элемента (имя, возраст, курс)
+        if len(row) == 3:
+            # Добавляем данные студента в список в виде словаря
+            students.append({
+                'name': row[0],
+                'age': row[1],
+                'course': row[2]
+            })
 
-for product in products:
-    name = product.select_one(name_selector)
-    price = product.select_one(price_selector)
-    if name and price:
-        name = name.get_text(strip=True)
-        price = price.get_text(strip=True)
+# Пример добавления нового студента
+students.append({'name': 'John Doe', 'age': '22', 'course': 'Physics'})
 
-        product_data.append([name, price])
-        print(f"Product: {name}, Price: {price}")
-# Экспорт данных в CSV
-
-with open("products.csv", "w", newline="", encoding="utf-8") as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerow(["Name", "Price"])
-    writer.writerows(product_data)
+# Запись обновленных данных студентов в CSV-файл
+with open(filename, mode='w', newline='', encoding='utf-8') as csvfile:
+    # Создаем объект csvwriter для записи строк в файл
+    csvwriter = csv.DictWriter(csvfile, fieldnames=["name", "age", "course"])
+    # Записываем данные каждого студента в файл
+    if file_empty:
+        csvwriter.writeheader()
+    csvwriter.writerows(students)
