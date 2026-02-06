@@ -1,29 +1,30 @@
-from bs4 import BeautifulSoup
+from selenium import webdriver
+import time
 
-# Загрузка HTML-файла
-with open('example.html', 'r', encoding='utf-8') as file:
-    html_content = file.read()
+# Создаем экземпляр драйвера браузера
+driver = webdriver.Chrome()
 
-# Создание объекта BeautifulSoup
-soup = BeautifulSoup(html_content, 'html.parser')
+# Открытие первой страницы в новой вкладке
+driver.get('https://www.example.com')
+# Задержка для загрузки страницы
+time.sleep(2)
 
-# Поиск всех продуктов
-products = soup.find_all('div', class_='product')
+# Открытие второй страницы в новой вкладке
+driver.execute_script("window.open('');")
+driver.switch_to.window(driver.window_handles[1])
+driver.get('https://www.example.org')
+# Задержка для загрузки страницы
+time.sleep(2)
 
-# Обработка каждого продукта
-for product in products:
-    # Извлечение названия продукта
-    title = product.find('h3').text
+# Переключение обратно на первую вкладку
+driver.switch_to.window(driver.window_handles[0])
+# Задержка для демонстрации переключения
+time.sleep(2)
 
-    # Извлечение цены продукта
-    price = product.find('span', class_='price').text
+# Переключение снова на вторую вкладку
+driver.switch_to.window(driver.window_handles[1])
+# Задержка для демонстрации переключения
+time.sleep(2)
 
-    # Извлечение описания продукта
-    description = product.find('p').text
-
-    # Проверка наличия и извлечение информации о скидке
-    discount_tag = product.find('div', class_='discount')
-    discount = discount_tag.text if discount_tag else 'No discount'
-
-    # Вывод информации о продукте
-    print(f"Title: {title}, Price: {price}, Discount: {discount}")
+# Закрытие всех вкладок и завершение работы браузера
+driver.quit()
