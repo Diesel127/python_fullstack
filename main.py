@@ -1,30 +1,18 @@
+import unittest
 from selenium import webdriver
-import time
 
-# Создаем экземпляр драйвера браузера
-driver = webdriver.Chrome()
+class TestExampleDomain(unittest.TestCase):
+    def setUp(self):
+        # Создаем экземпляр драйвера браузера
+        self.driver = webdriver.Chrome()
+        self.driver.get("https://example.com")
 
-# Открытие первой страницы в новой вкладке
-driver.get('https://www.example.com')
-# Задержка для загрузки страницы
-time.sleep(2)
+    def test_open_page(self):
+        # Проверка заголовка страницы
+        self.assertEqual(self.driver.title, "Example Domain")
 
-# Открытие второй страницы в новой вкладке
-driver.execute_script("window.open('');")
-driver.switch_to.window(driver.window_handles[1])
-driver.get('https://www.example.org')
-# Задержка для загрузки страницы
-time.sleep(2)
+    def tearDown(self):
+        # Закрытие браузера после выполнения теста
+        self.driver.quit()
 
-# Переключение обратно на первую вкладку
-driver.switch_to.window(driver.window_handles[0])
-# Задержка для демонстрации переключения
-time.sleep(2)
-
-# Переключение снова на вторую вкладку
-driver.switch_to.window(driver.window_handles[1])
-# Задержка для демонстрации переключения
-time.sleep(2)
-
-# Закрытие всех вкладок и завершение работы браузера
-driver.quit()
+unittest.main()
