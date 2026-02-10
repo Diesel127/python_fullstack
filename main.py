@@ -1,18 +1,33 @@
-import unittest
+import time
+
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 
-class TestExampleDomain(unittest.TestCase):
-    def setUp(self):
-        # Создаем экземпляр драйвера браузера
-        self.driver = webdriver.Chrome()
-        self.driver.get("https://example.com")
+# Настройка драйвера Chrome
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service)
 
-    def test_open_page(self):
-        # Проверка заголовка страницы
-        self.assertEqual(self.driver.title, "Example Domain")
+try:
+    # Открытие локальной HTML-страницы
+    driver.get("file:///path/to/your/local/form_page.html")  # Укажите путь к вашей локальной HTML-странице
 
-    def tearDown(self):
-        # Закрытие браузера после выполнения теста
-        self.driver.quit()
+    # Поиск полей формы
+    name_input = driver.find_element(By.NAME, "name")
+    email_input = driver.find_element(By.NAME, "email")
+    submit_button = driver.find_element(By.NAME, "submit")
 
-unittest.main()
+    # Заполнение формы
+    name_input.send_keys("Ваше имя")
+    email_input.send_keys("example@example.com")
+
+    # Имитирование нажатия кнопки "Submit"
+    submit_button.click()
+
+    # Небольшая задержка, чтобы увидеть результат
+    time.sleep(2)
+
+finally:
+    # Закрытие браузера
+    driver.quit()
